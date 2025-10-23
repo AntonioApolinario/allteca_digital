@@ -35,3 +35,9 @@ group :development, :test do
   gem 'faker', '~> 3.2'
   gem 'shoulda-matchers', '~> 5.3'
 end
+
+gem "rswag", "~> 2.16"
+
+gem "graphql", "~> 2.5"
+
+gem "graphiql-rails", "~> 1.10"
