@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+
+    container_name: biblioteca_digital_app
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - .:/app
+
+    environment:
+
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - RAILS_ENV=development
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+
+    image: postgres:14-alpine
+    container_name: biblioteca_digital_db
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=biblioteca_digital_development
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - biblioteca_digital_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  biblioteca_digital_data:
