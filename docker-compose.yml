@@ -6,13 +6,12 @@ services:
 
     container_name: biblioteca_digital_app
     ports:
-      - "3000:3000"
+      - "3001:3000"  # Usando porta 3001 externamente
 
     volumes:
       - .:/app
 
     environment:
-
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -23,7 +22,6 @@ services:
         condition: service_healthy
 
   db:
-
     image: postgres:14-alpine
     container_name: biblioteca_digital_db
 
@@ -33,7 +31,7 @@ services:
       - POSTGRES_DB=biblioteca_digital_development
 
     ports:
-      - "5433:5432"
+      - "5434:5432"
 
     volumes:
       - biblioteca_digital_data:/var/lib/postgresql/data
@@ -43,7 +41,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
 
 volumes:
   biblioteca_digital_data:
