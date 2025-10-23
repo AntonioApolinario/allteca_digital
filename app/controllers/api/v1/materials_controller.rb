@@ -2,8 +2,21 @@ class Api::V1::MaterialsController < ApplicationController
   before_action :set_material, only: [:show, :update, :destroy]
 
   def index
-    materials = policy_scope(Material).includes(:author, :user)
-    render json: MaterialSerializer.new(materials).serializable_hash
+    materials = policy_scope(Material)
+                .includes(:author, :user)
+                .search(params[:q])
+                .order(created_at: :desc)
+                .page(params[:page]).per(params[:per_page] || 10)
+    
+    render json: {
+      data: MaterialSerializer.new(materials).serializable_hash,
+      pagination: {
+        current_page: materials.current_page,
+        total_pages: materials.total_pages,
+        total_count: materials.total_count,
+        per_page: materials.limit_value
+      }
+    }
   end
 
   def show

@@ -13,6 +13,16 @@ class Material < ApplicationRecord
   scope :draft, -> { where(status: "draft") }
   scope :archived, -> { where(status: "archived") }
   
+  # Search scope
+  scope :search, ->(query) {
+    if query.present?
+      where("title ILIKE :q OR description ILIKE :q", q: "%#{query}%")
+        .or(where(author_id: Author.where("name ILIKE :q", q: "%#{query}%").select(:id)))
+    else
+      all
+    end
+  }
+  
   def self.types
     %w[Book Article Video]
   end
