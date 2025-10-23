@@ -5,10 +5,9 @@ Rails.application.routes.draw do
       post "auth/login", to: "auth#login"
       delete "auth/logout", to: "auth#logout"
       
-      # Devise routes (manter para compatibilidade)
-      devise_for :users, controllers: {
-        sessions: "api/v1/sessions"
-      }, defaults: { format: :json }, skip: [:sessions]
+      # Resources
+      resources :materials, only: [:index, :show, :create, :update, :destroy]
+      resources :authors, only: [:index, :show, :create, :update, :destroy]
     end
   end
 
