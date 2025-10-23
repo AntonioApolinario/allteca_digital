@@ -3,16 +3,16 @@ class MaterialPolicy < ApplicationPolicy
     def resolve
       if user
         # Usuários autenticados veem materiais publicados + seus próprios
-        scope.where(status: "published").or(scope.where(user: user))
+        scope.where(status: "publicado").or(scope.where(user: user))
       else
         # Usuários não autenticados veem apenas materiais publicados
-        scope.where(status: "published")
+        scope.where(status: "publicado")
       end
     end
   end
 
   def show?
-    record.published? || (user && (record.user == user || user_admin?))
+    record.publicado? || (user && (record.user == user || user_admin?))
   end
 
   def create?

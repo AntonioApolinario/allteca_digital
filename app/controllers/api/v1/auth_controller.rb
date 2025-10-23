@@ -1,5 +1,5 @@
 class Api::V1::AuthController < ApplicationController
-  before_action :authenticate_user!, only: [:logout]
+  before_action :authenticate_user!, only: [:logout, :me]
   skip_before_action :authenticate_user!, only: [:login]
 
   def login
@@ -9,18 +9,18 @@ class Api::V1::AuthController < ApplicationController
       token = user.generate_jwt
       render json: { 
         token: token,
-        user: {
-          id: user.id,
-          email: user.email
-        }
+        user: UserSerializer.new(user).serializable_hash
       }, status: :ok
     else
-      render json: { error: "Invalid email or password" }, status: :unauthorized
+      render json: { error: "Email ou senha inválidos" }, status: :unauthorized
     end
   end
 
   def logout
-    # Com JWT stateless, o logout é feito no cliente
-    render json: { message: "Logged out successfully" }, status: :ok
+    render json: { message: "Logout realizado com sucesso" }, status: :ok
+  end
+
+  def me
+    render json: UserSerializer.new(current_user).serializable_hash
   end
 end

@@ -20,6 +20,9 @@ gem "fast_jsonapi", "~> 1.5"
 # Paginação
 gem "kaminari", "~> 1.2.0"
 
+# HTTP Requests
+gem "httparty", "~> 0.21.0"
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false

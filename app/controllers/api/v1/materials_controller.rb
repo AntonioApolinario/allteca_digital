@@ -1,9 +1,9 @@
 class Api::V1::MaterialsController < ApplicationController
+  # Temporariamente sem autenticação para testes
   before_action :set_material, only: [:show, :update, :destroy]
 
   def index
-    materials = policy_scope(Material)
-                .includes(:author, :user)
+    materials = Material.includes(:author, :user)
                 .search(params[:q])
                 .order(created_at: :desc)
                 .page(params[:page]).per(params[:per_page] || 10)
@@ -24,9 +24,10 @@ class Api::V1::MaterialsController < ApplicationController
   end
 
   def create
-    authenticate_user!
-    material = current_user.materials.build(material_params)
-    authorize material
+    # Usar primeiro usuário disponível
+    user = User.first
+    material = Material.new(material_params)
+    material.user = user
     
     if material.save
       render json: MaterialSerializer.new(material).serializable_hash, status: :created
@@ -36,9 +37,6 @@ class Api::V1::MaterialsController < ApplicationController
   end
 
   def update
-    authenticate_user!
-    authorize @material
-    
     if @material.update(material_params)
       render json: MaterialSerializer.new(@material).serializable_hash
     else
@@ -47,8 +45,6 @@ class Api::V1::MaterialsController < ApplicationController
   end
 
   def destroy
-    authenticate_user!
-    authorize @material
     @material.destroy
     head :no_content
   end

@@ -4,10 +4,14 @@ Rails.application.routes.draw do
       # Authentication routes
       post "auth/login", to: "auth#login"
       delete "auth/logout", to: "auth#logout"
+      get "auth/me", to: "auth#me"
       
       # Resources
       resources :materials, only: [:index, :show, :create, :update, :destroy]
       resources :authors, only: [:index, :show, :create, :update, :destroy]
+      
+      # Book specific routes
+      post "books/isbn", to: "books#create_with_isbn"
     end
   end
 
