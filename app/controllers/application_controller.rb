@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  require \"kaminari\" # Garantir que Kaminari seja carregado
+  
   include ActionController::MimeResponds
   include Pundit::Authorization
   
@@ -8,12 +10,12 @@ class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def current_user
-    return unless request.headers["Authorization"].present?
+    return unless request.headers[\"Authorization\"].present?
     
-    token = request.headers["Authorization"].split(" ").last
+    token = request.headers[\"Authorization\"].split(\" \").last
     begin
       payload = Warden::JWTAuth::TokenDecoder.new.call(token)
-      @current_user ||= User.find(payload["sub"])
+      @current_user ||= User.find(payload[\"sub\"])
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound
       nil
     end
@@ -34,10 +36,10 @@ class ApplicationController < ActionController::API
   private
 
   def user_not_authorized
-    render json: { error: "You are not authorized to perform this action." }, status: :forbidden
+    render json: { error: \"You are not authorized to perform this action.\" }, status: :forbidden
   end
 
   def record_not_found
-    render json: { error: "Record not found." }, status: :not_found
+    render json: { error: \"Record not found.\" }, status: :not_found
   end
 end
