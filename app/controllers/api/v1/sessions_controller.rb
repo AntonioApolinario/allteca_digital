@@ -1,9 +1,10 @@
 class Api::V1::SessionsController < Devise::SessionsController
   respond_to :json
 
-  private
-
-  def respond_with(resource, _opts = {})
+  def create
+    self.resource = warden.authenticate!(auth_options)
+    sign_in(resource_name, resource)
+    
     render json: {
       status: { code: 200, message: "Logged in successfully." },
       data: {
@@ -17,15 +18,27 @@ class Api::V1::SessionsController < Devise::SessionsController
     }, status: :ok
   end
 
-  def respond_to_on_destroy
-    if current_user
+  def destroy
+    signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
+    
+    if signed_out
       render json: {
         status: { code: 200, message: "Logged out successfully." }
       }, status: :ok
     else
       render json: {
-        status: { code: 401, message: "Couldn't find an active session." }
+        status: { code: 401, message: "Could not find an active session." }
       }, status: :unauthorized
     end
+  end
+
+  private
+
+  def respond_with(resource, _opts = {})
+    render json: resource
+  end
+
+  def respond_to_on_destroy
+    head :no_content
   end
 end
