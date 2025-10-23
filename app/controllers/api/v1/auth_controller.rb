@@ -1,4 +1,5 @@
 class Api::V1::AuthController < ApplicationController
+  before_action :authenticate_user!, only: [:logout]
   skip_before_action :authenticate_user!, only: [:login]
 
   def login
