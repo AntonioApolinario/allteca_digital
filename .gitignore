@@ -21,58 +21,60 @@
 # Ignore uploaded files in development.
 /storage/*
 !/storage/.keep
-/tmp/storage/*
-!/tmp/storage/
-!/tmp/storage/.keep
 
-# Ignore environment files
+/public/assets
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+/config/credentials/*.key
+/config/credentials/*.yml
+
+# Ignore environment variables
 .env
 .env.*
+!.env.example
 
-# Ignore database files
-*.sqlite3
-*.db
+# Ignore IDE and editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # Ignore node_modules
-/node_modules
-
-# Ignore yarn files
-/yarn-error.log
-yarn-debug.log*
-
-# Ignore cache
-.byebug_history
-
-# Ignore Spring files
-/spring/*.pid
+node_modules/
 
 # Ignore test coverage
 /coverage/
 
-# Ignore IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Ignore production files
-/public/assets
-
-# Ignore docs
-/.yardoc/
-/_yardoc/
-/doc/
-/rdoc/
-
-# Ignore OS files
-.DS_Store
-Thumbs.db
+# Ignore database dumps
+*.sql
+*.dump
 
 # Ignore Docker
-Dockerfile.dev
-docker-compose.override.yml
+.docker/
 
-# Ignore credentials
-config/credentials.yml.enc
-config/master.key
-.env.*
+# Ignore production builds
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+# Ignore Spring
+/spring/pid
+
+# Ignore package-lock
+package-lock.json
