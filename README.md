@@ -341,8 +341,3 @@ Testar banco:
 bash
 docker compose exec app rails runner "puts ActiveRecord::Base.connection.active?"
 ✨ Sistema pronto para uso! Acesse http://localhost:3001/api-docs para documentação interativa completa.
-EOF
-
-text
-
-Agora o README.md contém TODOS os comandos como conteúdo do arquivo, organizados por categorias, para que qualquer pessoa possa usar o sistema! 🎉
