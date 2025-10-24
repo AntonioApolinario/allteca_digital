@@ -17,9 +17,17 @@ class ApplicationController < ActionController::API
     return unless token.present?
     
     begin
-      payload = Warden::JWTAuth::TokenDecoder.new.call(token)
-      @current_user = User.find(payload["sub"])
-    rescue JWT::DecodeError, ActiveRecord::RecordNotFound => e
+      # Usar a mesma chave que o Devise JWT
+      secret = ENV.fetch("DEVISE_JWT_SECRET_KEY") { "test_secret_key_1234567890" }
+      payload = JWT.decode(token, secret, true, { algorithm: 'HS256' })
+      @current_user = User.find_by(id: payload[0]["sub"])
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT Decode Error: #{e.message}"
+      @current_user = nil
+    rescue ActiveRecord::RecordNotFound => e
+      Rails.logger.error "User not found: #{e.message}"
+      @current_user = nil
+    rescue => e
       Rails.logger.error "Authentication error: #{e.message}"
       @current_user = nil
     end

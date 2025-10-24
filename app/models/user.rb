@@ -10,6 +10,15 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   def generate_jwt
-    Warden::JWTAuth::UserEncoder.new.call(self, :user, nil).first
+    # Usar a mesma abordagem que o ApplicationController
+    secret = ENV.fetch("DEVISE_JWT_SECRET_KEY") { "test_secret_key_1234567890" }
+    payload = { 
+      sub: id,
+      scp: 'user',
+      iat: Time.now.to_i,
+      exp: 30.days.from_now.to_i,
+      jti: SecureRandom.uuid
+    }
+    JWT.encode(payload, secret, 'HS256')
   end
 end

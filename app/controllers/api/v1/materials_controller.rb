@@ -1,15 +1,19 @@
-class Api::V1::MaterialsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+class Api::V1::MaterialsController < ApiController
+  before_action :authenticate_user!, except: [:index, :show, :search]
   before_action :set_material, only: [:show, :update, :destroy]
+  after_action :verify_authorized, except: [:index, :search]
 
+  # GET /api/v1/materials
   def index
-    materials = Material.includes(:author, :user)
-                .search(params[:q])
+    materials = policy_scope(Material)
+                .includes(:author, :user)
                 .order(created_at: :desc)
-                .page(params[:page]).per(params[:per_page] || 10)
+    
+    # Paginação com Kaminari
+    materials = materials.page(params[:page]).per(params[:per_page] || 20)
     
     render json: {
-      data: MaterialSerializer.new(materials).serializable_hash,
+      materials: MaterialSerializer.new(materials).serializable_hash,
       pagination: {
         current_page: materials.current_page,
         total_pages: materials.total_pages,
@@ -19,26 +23,50 @@ class Api::V1::MaterialsController < ApplicationController
     }
   end
 
+  # GET /api/v1/materials/search?q=termo
+  def search
+    materials = policy_scope(Material)
+                .search(params[:q])
+                .includes(:author, :user)
+                .order(created_at: :desc)
+    
+    materials = materials.page(params[:page]).per(params[:per_page] || 20)
+    
+    render json: {
+      materials: MaterialSerializer.new(materials).serializable_hash,
+      pagination: {
+        current_page: materials.current_page,
+        total_pages: materials.total_pages,
+        total_count: materials.total_count,
+        per_page: materials.limit_value
+      }
+    }
+  end
+
+  # GET /api/v1/materials/:id
   def show
+    authorize @material
     render json: MaterialSerializer.new(@material).serializable_hash
   end
 
+  # POST /api/v1/materials
   def create
-    material = Material.new(material_params)
-    material.user = current_user
+    @material = Material.new(material_params)
+    @material.user = current_user
     
-    if material.save
-      render json: MaterialSerializer.new(material).serializable_hash, status: :created
+    authorize @material
+
+    if @material.save
+      render json: MaterialSerializer.new(@material).serializable_hash, status: :created
     else
-      render json: { errors: material.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @material.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
+  # PATCH/PUT /api/v1/materials/:id
   def update
-    if @material.user != current_user
-      return render json: { error: "Você só pode editar seus próprios materiais." }, status: :forbidden
-    end
-    
+    authorize @material
+
     if @material.update(material_params)
       render json: MaterialSerializer.new(@material).serializable_hash
     else
@@ -46,11 +74,9 @@ class Api::V1::MaterialsController < ApplicationController
     end
   end
 
+  # DELETE /api/v1/materials/:id
   def destroy
-    if @material.user != current_user
-      return render json: { error: "Você só pode excluir seus próprios materiais." }, status: :forbidden
-    end
-    
+    authorize @material
     @material.destroy
     head :no_content
   end
@@ -62,7 +88,9 @@ class Api::V1::MaterialsController < ApplicationController
   end
 
   def material_params
-    params.require(:material).permit(:type, :title, :description, :status, :author_id, 
-                                    :isbn, :page_count, :doi, :duration_minutes)
+    params.require(:material).permit(
+      :type, :title, :description, :status, :author_id,
+      :isbn, :page_count, :doi, :duration_minutes
+    )
   end
 end

@@ -10,7 +10,11 @@ Rails.application.routes.draw do
       get "auth/me", to: "auth#me"
       
       # Resources
-      resources :materials, only: [:index, :show, :create, :update, :destroy]
+      resources :materials, only: [:index, :show, :create, :update, :destroy] do
+        collection do
+          get :search
+        end
+      end
       resources :authors, only: [:index, :show, :create, :update, :destroy]
       
       # Book specific routes
@@ -20,3 +24,9 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
+
+  namespace :api do
+    namespace :v1 do
+      get 'test/auth', to: 'test#check_auth'
+    end
+  end
