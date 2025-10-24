@@ -9,4 +9,9 @@ class Author < ApplicationRecord
   def self.types
     %w[Person Institution]
   end
+
+  # Configurar Pundit para usar AuthorPolicy para todas as subclasses
+  def self.policy_class
+    AuthorPolicy
+  end
 end

@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
+  
   namespace :api do
     namespace :v1 do
       # Authentication routes
@@ -19,14 +20,11 @@ Rails.application.routes.draw do
       
       # Book specific routes
       post "books/isbn", to: "books#create_with_isbn"
+      
+      # Test route
+      get 'test/auth', to: 'test#check_auth'
     end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
-
-  namespace :api do
-    namespace :v1 do
-      get 'test/auth', to: 'test#check_auth'
-    end
-  end

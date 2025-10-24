@@ -17,7 +17,7 @@ class ApplicationController < ActionController::API
     return unless token.present?
     
     begin
-      # Usar a mesma chave que o Devise JWT
+      # Usar a mesma chave que o User model
       secret = ENV.fetch("DEVISE_JWT_SECRET_KEY") { "test_secret_key_1234567890" }
       payload = JWT.decode(token, secret, true, { algorithm: 'HS256' })
       @current_user = User.find_by(id: payload[0]["sub"])
