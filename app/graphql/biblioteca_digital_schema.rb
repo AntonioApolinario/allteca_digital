@@ -18,9 +18,26 @@ class BibliotecaDigitalSchema < GraphQL::Schema
 
   # Union and Interface Resolution
   def self.resolve_type(abstract_type, obj, ctx)
-    # TODO: Implement this method
-    # to return the correct GraphQL object type for `obj`
-    raise(GraphQL::RequiredImplementationMissingError)
+    case obj
+    when User
+      Types::UserType
+    when Author
+      Types::AuthorType
+    when Material
+      Types::MaterialType
+    when Book
+      Types::MaterialType
+    when Article
+      Types::MaterialType
+    when Video
+      Types::MaterialType
+    when Person
+      Types::AuthorType
+    when Institution
+      Types::AuthorType
+    else
+      raise(GraphQL::RequiredImplementationMissingError)
+    end
   end
 
   # Limit the size of incoming queries:
@@ -33,13 +50,11 @@ class BibliotecaDigitalSchema < GraphQL::Schema
 
   # Return a string UUID for `object`
   def self.id_from_object(object, type_definition, query_ctx)
-    # For example, use Rails' GlobalID library (https://github.com/rails/globalid):
-    object.to_gid_param
+    object.to_gid.to_s
   end
 
   # Given a string UUID, find the object
   def self.object_from_id(global_id, query_ctx)
-    # For example, use Rails' GlobalID library (https://github.com/rails/globalid):
     GlobalID.find(global_id)
   end
 end

@@ -5,6 +5,11 @@ class MaterialSerializer
   belongs_to :user
   belongs_to :author
 
+  # Tipo específico para frontend
+  attribute :material_type do |material|
+    material.type
+  end
+
   attribute :specific_attributes do |object|
     case object
     when Book
